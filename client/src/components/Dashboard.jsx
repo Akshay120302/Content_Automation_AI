@@ -31,9 +31,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Card } from "./ui/card";
 import { CreatePipelineModal } from "./CreatePipelineModal";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
+
+import userData from "../data/userData.json";
 
 export function Dashboard() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [pipelines, setPipelines] = useState([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -61,13 +64,13 @@ export function Dashboard() {
             ...p,
             status: p.status === "active" ? "paused" : "active",
           }
-        : p
+        : p,
     );
 
     setPipelines(updatedPipelines);
     localStorage.setItem(
       "flowforge-pipelines",
-      JSON.stringify(updatedPipelines)
+      JSON.stringify(updatedPipelines),
     );
   };
 
@@ -102,77 +105,21 @@ export function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Navigation */}
-      <nav className="bg-white border-b sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <button
-              onClick={() => navigate("/")}
-              className="flex items-center gap-2 cursor-pointer"
-            >
-              <div className="bg-gradient-to-br from-purple-600 to-blue-600 p-2 rounded-lg">
-                <Zap className="size-5 text-white" />
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                FlowForge
-              </span>
-            </button>
 
-            {/* Right side */}
-            <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-purple-50 rounded-lg border border-purple-200">
-                <CreditCard className="size-4 text-purple-600" />
-                <span className="text-sm font-medium text-purple-700">
-                  Pro Plan
-                </span>
-              </div>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-10 w-10 rounded-full">
-                    <Avatar>
-                      <AvatarImage src="" alt="User" />
-                      <AvatarFallback className="bg-gradient-to-br from-purple-600 to-blue-600 text-white">
-                        JD
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col">
-                      <span className="font-semibold">John Doe</span>
-                      <span className="text-xs text-gray-500">
-                        john@example.com
-                      </span>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <User className="size-4 mr-2" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <CreditCard className="size-4 mr-2" />
-                    Billing
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate("/")}>
-                    Sign out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar
+        variant="profile"
+        onNavigate={(page) => navigate(`/${page}`)}
+        userData={userData}
+        backTarget=""
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2 text-black">Your Pipelines</h1>
+            <h1 className="text-3xl font-bold mb-2 text-black">
+              Your Pipelines
+            </h1>
             <p className="text-gray-600">
               Manage your automated content workflows
             </p>
@@ -293,7 +240,11 @@ export function Dashboard() {
                     </TableCell>
                     <TableCell>{formatPostingTime(pipeline)}</TableCell>
                     <TableCell className="text-center">
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => navigate(`/pipeline/${pipeline.id}`)}
+                      >
                         <Eye className="size-4" />
                       </Button>
                     </TableCell>

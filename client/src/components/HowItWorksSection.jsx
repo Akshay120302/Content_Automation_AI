@@ -29,10 +29,10 @@ const steps = [
 
 const HowItWorksSection = () => {
   return (
-    <section id="how-it-works" className="py-24 relative bg-card/50">
+    <section id="how-it-works" className="py-24 relative bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-black">
             How{" "}
             <span className="text-gradient-molten">FlowForge</span>{" "}
             Works
@@ -54,7 +54,7 @@ const HowItWorksSection = () => {
                   <div className="group text-center">
                     {/* Step number */}
                     <div className="relative inline-flex mb-6">
-                      <div className="w-20 h-20 rounded-2xl bg-background border-2 border-forge-ember/30 flex items-center justify-center group-hover:border-forge-ember group-hover:shadow-ember transition-all duration-300">
+                      <div className="w-20 h-20 rounded-2xl bg-background border-2 border-gray-500 flex items-center justify-center group-hover:border-forge-ember group-hover:shadow-ember transition-all duration-300">
                         <Icon className="h-8 w-8 text-forge-ember" />
                       </div>
                       <span className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-gradient-molten flex items-center justify-center text-xs font-bold text-primary-foreground">

@@ -41,10 +41,10 @@ const contentTypes = [
 
 const ContentTypesSection = () => {
   return (
-    <section className="py-24 relative bg-card/50">
+    <section className="py-24 relative bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-black">
             Create{" "}
             <span className="text-gradient-molten">Any Content</span>
           </h2>
@@ -60,7 +60,7 @@ const ContentTypesSection = () => {
             return (
               <div
                 key={type.name}
-                className="group relative p-8 rounded-2xl bg-background border border-border hover:border-forge-ember/30 transition-all duration-300"
+                className="group relative p-8 rounded-2xl bg-background border border-gray-300 hover:border-forge-ember/30 transition-all duration-300"
               >
                 {/* Background gradient */}
                 <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${type.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />

@@ -110,6 +110,7 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
     platform: '',
     contentType: '',
     agentModel: '',
+    manualIntervention: false,
     additionalPrompts: '',
     time: '',
     timezone: '',
@@ -133,6 +134,7 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
       platform: formData.platform,
       contentType: formData.contentType,
       agentModel: formData.agentModel,
+      manualIntervention: formData.manualIntervention,
       additionalPrompts: formData.additionalPrompts,
       time: formData.time,
       timezone: formData.timezone,
@@ -167,6 +169,7 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
       platform: '',
       contentType: '',
       agentModel: '',
+      manualIntervention: false,
       additionalPrompts: '',
       time: '',
       timezone: '',
@@ -206,13 +209,13 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-2xl">
+          <DialogTitle className="flex items-center gap-2 text-2xl text-black">
             <Sparkles className="size-6 text-purple-600" />
             Create New Pipeline
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-gray-600">
             Configure your automated content creation workflow
           </DialogDescription>
         </DialogHeader>
@@ -220,24 +223,24 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
         <form onSubmit={handleSubmit} className="space-y-6 mt-4">
           {/* Platform Selection */}
           <div className="space-y-2">
-            <Label htmlFor="platform" className="flex items-center gap-2">
+            <Label htmlFor="platform" className="flex items-center gap-2 text-black">
               Platform
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="size-4 text-gray-400" />
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent className="bg-white text-black border">
                     <p>Choose where your content will be published</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </Label>
             <Select value={formData.platform} onValueChange={(value) => setFormData({...formData, platform: value})}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white text-black border-gray-300">
                 <SelectValue placeholder="Select platform" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white text-black">
                 {platforms.map((platform) => (
                   <SelectItem key={platform} value={platform}>
                     {platform}
@@ -249,12 +252,12 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
 
           {/* Content Type */}
           <div className="space-y-2">
-            <Label htmlFor="contentType">Content Type</Label>
+            <Label htmlFor="contentType" className="text-black">Content Type</Label>
             <Select value={formData.contentType} onValueChange={(value) => setFormData({...formData, contentType: value})}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white text-black border-gray-300">
                 <SelectValue placeholder="Select content type" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white text-black">
                 {contentTypes.map((type) => (
                   <SelectItem key={type} value={type}>
                     {type}
@@ -266,24 +269,24 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
 
           {/* Agent Model */}
           <div className="space-y-2">
-            <Label htmlFor="agentModel" className="flex items-center gap-2">
+            <Label htmlFor="agentModel" className="flex items-center gap-2 text-black">
               Agent Model
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="size-4 text-gray-400" />
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent className="bg-white text-black border">
                     <p>AI model used to generate your content script</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </Label>
             <Select value={formData.agentModel} onValueChange={(value) => setFormData({...formData, agentModel: value})}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white text-black border-gray-300">
                 <SelectValue placeholder="Select AI model" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white text-black">
                 {agentModels.map((model) => (
                   <SelectItem key={model} value={model}>
                     {model}
@@ -293,10 +296,44 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
             </Select>
           </div>
 
+          {/* Manual Intervention */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between p-4 border border-gray-300 rounded-lg bg-gray-50">
+              <div className="flex-1">
+                <Label htmlFor="manualIntervention" className="flex items-center gap-2 text-black cursor-pointer">
+                  Manual Intervention Before Posting
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="size-4 text-gray-400" />
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-white text-black border max-w-xs">
+                        <p>When enabled, content will be queued for your review and approval before posting</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </Label>
+                <p className="text-xs text-gray-600 mt-1">
+                  Review and approve content before it's published
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant={formData.manualIntervention ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFormData({...formData, manualIntervention: !formData.manualIntervention})}
+                className={formData.manualIntervention ? "bg-gradient-to-r from-purple-600 to-blue-600" : "text-black"}
+              >
+                {formData.manualIntervention ? "Enabled" : "Disabled"}
+              </Button>
+            </div>
+          </div>
+
           {/* Additional Prompts */}
           <div className="space-y-2">
-            <Label htmlFor="prompts">Additional User Prompts</Label>
+            <Label htmlFor="prompts" className="text-black">Additional User Prompts</Label>
             <Textarea
+            className="bg-white text-black border-gray-300"
               id="prompts"
               placeholder="Add specific instructions for content generation (e.g., tone, style, specific topics to cover...)"
               value={formData.additionalPrompts}
@@ -310,21 +347,25 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
           {/* Time and Timezone */}
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="time">Posting Time</Label>
+              <Label htmlFor="time" className="text-black">Posting Time</Label>
               <Input
+              className={`bg-white border-gray-300 ${formData.time ? 'text-black' : 'text-gray-400'}`}
                 id="time"
                 type="time"
                 value={formData.time}
                 onChange={(e) => setFormData({...formData, time: e.target.value})}
+                style={{
+                  colorScheme: 'light'
+                }}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="timezone">Timezone</Label>
+              <Label htmlFor="timezone" className="text-black">Timezone</Label>
               <Select value={formData.timezone} onValueChange={(value) => setFormData({...formData, timezone: value})}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white text-black border-gray-300">
                   <SelectValue placeholder="Select timezone" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white text-black">
                   {timezones.map((tz) => (
                     <SelectItem key={tz} value={tz}>
                       {tz}
@@ -337,13 +378,13 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
 
           {/* Frequency */}
           <div className="space-y-2">
-            <Label>Frequency</Label>
+            <Label className="text-black">Frequency</Label>
             <div className="grid md:grid-cols-2 gap-4">
               <Select value={formData.frequency} onValueChange={(value) => setFormData({...formData, frequency: value})}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white text-black border-gray-300">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white text-black">
                   {frequencies.map((freq) => (
                     <SelectItem key={freq.value} value={freq.value}>
                       {freq.label}
@@ -353,12 +394,12 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
               </Select>
               <div className="flex items-center gap-2">
                 <Input
+                className="bg-white text-black w-20 border-gray-300"
                   type="number"
                   min="1"
                   max="30"
                   value={formData.frequencyCount}
                   onChange={(e) => setFormData({...formData, frequencyCount: e.target.value})}
-                  className="w-20"
                 />
                 <span className="text-sm text-gray-600">
                   times per {formData.frequency === 'daily' ? 'day' : formData.frequency === 'weekly' ? 'week' : 'month'}
@@ -370,32 +411,32 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
           {/* Temperature */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="flex items-center gap-2">
+              <Label className="flex items-center gap-2 text-black">
                 Temperature
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
                       <Info className="size-4 text-gray-400" />
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent className="bg-white text-black border">
                       <p>Lower = More Factual, Higher = More Creative/Storytelling</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </Label>
-              <span className="text-sm font-medium">{formData.temperature[0].toFixed(1)}</span>
+              <span className="text-sm font-medium text-black">{formData.temperature[0].toFixed(1)}</span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-xs text-gray-500">Factual</span>
+              <span className="text-xs text-gray-600">Factual</span>
               <Slider
                 value={formData.temperature}
                 onValueChange={(value) => setFormData({...formData, temperature: value})}
                 min={0}
                 max={1}
                 step={0.1}
-                className="flex-1"
+                className="flex-1 text-black bg-white"
               />
-              <span className="text-xs text-gray-500">Creative</span>
+              <span className="text-xs text-gray-600">Creative</span>
             </div>
           </div>
 
@@ -403,21 +444,21 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
 
           {/* Social Media Connection */}
           <div className="space-y-3">
-            <Label className="flex items-center gap-2">
+            <Label className="flex items-center gap-2 text-black">
               Social Media Connection
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="size-4 text-gray-400" />
                   </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
+                  <TooltipContent className="max-w-xs bg-white text-black border">
                     <p>Connect your social media accounts using OAuth authentication. This allows FlowForge to post content on your behalf securely.</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </Label>
-            <div className="p-4 border rounded-lg bg-gray-50">
-              <p className="text-sm text-gray-600 mb-3">
+            <div className="p-4 border border-gray-300 rounded-lg bg-white text-gray-500">
+              <p className="text-sm text-black mb-3">
                 {formData.platform ? `Connect your ${formData.platform} account to enable automated posting` : 'Select a platform first'}
               </p>
               {formData.platform && (
@@ -438,7 +479,7 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
                   )}
                 </div>
               )}
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-gray-600 mt-2">
                 🔒 Your credentials are encrypted and never stored on our servers
               </p>
             </div>
@@ -446,12 +487,12 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
 
           {/* Genre */}
           <div className="space-y-2">
-            <Label htmlFor="genre">Genre</Label>
+            <Label htmlFor="genre" className="text-black">Genre</Label>
             <Select value={formData.genre} onValueChange={(value) => setFormData({...formData, genre: value})}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white text-black border-gray-300">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white text-black">
                 {genres.map((genre) => (
                   <SelectItem key={genre} value={genre}>
                     {genre}
@@ -463,12 +504,12 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
 
           {/* Topic */}
           <div className="space-y-2">
-            <Label htmlFor="topicType">Topic</Label>
+            <Label htmlFor="topicType" className="text-black">Topic</Label>
             <Select value={formData.topicType} onValueChange={(value) => setFormData({...formData, topicType: value})}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white text-black border-gray-300">
                 <SelectValue placeholder="Select topic type" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white text-black">
                 {topicTypes.map((topic) => (
                   <SelectItem key={topic} value={topic}>
                     {topic}
@@ -481,16 +522,16 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
                 placeholder="Enter specific topic..."
                 value={formData.specificTopic}
                 onChange={(e) => setFormData({...formData, specificTopic: e.target.value})}
-                className="mt-2"
+                className="mt-2 bg-white text-black border-gray-300"
               />
             )}
           </div>
 
           {/* Region */}
           <div className="space-y-2">
-            <Label>Target Region(s)</Label>
-            <div className="p-4 border rounded-lg bg-gray-50 max-h-48 overflow-y-auto">
-              <div className="flex flex-wrap gap-2">
+            <Label className="text-black">Target Region(s)</Label>
+            <div className="p-4 border border-gray-300 rounded-lg bg-gray-50 max-h-48 overflow-y-auto">
+              <div className="flex flex-wrap gap-2 ">
                 {regions.map((region) => (
                   <Badge
                     key={region}
@@ -498,7 +539,7 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
                     className={`cursor-pointer transition-colors ${
                       formData.regions.includes(region)
                         ? 'bg-purple-100 border-purple-500 text-purple-700'
-                        : 'hover:bg-gray-100'
+                        : 'hover:bg-gray-100 text-black border-gray-300'
                     }`}
                     onClick={() => toggleRegion(region)}
                   >
@@ -508,14 +549,14 @@ export function CreatePipelineModal({ open, onOpenChange, onPipelineCreated }) {
                 ))}
               </div>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-600">
               {formData.regions.length === 0 ? 'Select one or more regions' : `${formData.regions.length} region(s) selected`}
             </p>
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+            <Button type="button" variant="outline" className="text-black border border-gray-300" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" className="bg-gradient-to-r from-purple-600 to-blue-600">

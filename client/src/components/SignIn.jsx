@@ -23,14 +23,14 @@ export function SignIn() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         {/* Back button */}
-        <Button 
+        {/* <Button 
           variant="ghost" 
           className="mb-6"
-          onClick={() => navigate('/signin')}
+          onClick={() => navigate('/')}
         >
-          <ArrowLeft className="size-4 mr-2" />
-          Back to home
-        </Button>
+          <ArrowLeft className="size-4 mr-2 text-black" />
+          <span className="text-black">Back to home</span>
+        </Button> */}
 
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8 border-2">
@@ -45,17 +45,17 @@ export function SignIn() {
           </div>
 
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-2">Welcome back</h1>
+            <h1 className="text-3xl font-bold mb-2 text-black">Welcome back</h1>
             <p className="text-gray-600">Sign in to continue building your workflows</p>
           </div>
 
           {/* Social login buttons */}
           <div className="space-y-3 mb-6">
-            <Button variant="outline" className="w-full" size="lg">
-              <Chrome className="size-5 mr-2" />
+            <Button variant="outline" className="w-full text-black" size="lg">
+              <Chrome className="size-5 mr-2 text-black" />
               Continue with Google
             </Button>
-            <Button variant="outline" className="w-full" size="lg">
+            <Button variant="outline" className="w-full text-black" size="lg">
               <Github className="size-5 mr-2" />
               Continue with GitHub
             </Button>
@@ -63,14 +63,14 @@ export function SignIn() {
 
           <div className="relative mb-6">
             <Separator />
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-sm text-gray-500">
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-sm text-gray-700">
               or continue with email
             </span>
           </div>
 
           {/* Sign in form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
+            <div className="space-y-2 text-gray-700">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
@@ -87,7 +87,7 @@ export function SignIn() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between text-gray-700">
                 <Label htmlFor="password">Password</Label>
                 <a href="#" className="text-sm text-purple-600 hover:text-purple-700">
                   Forgot password?

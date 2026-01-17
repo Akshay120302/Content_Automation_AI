@@ -13,10 +13,10 @@ const platforms = [
 
 const PlatformsSection = () => {
   return (
-    <section id="platforms" className="py-24 relative">
+    <section id="platforms" className="py-24 relative bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-black">
             One Workflow.{" "}
             <span className="text-gradient-molten">Every Platform.</span>
           </h2>
@@ -32,7 +32,7 @@ const PlatformsSection = () => {
             return (
               <div
                 key={platform.name}
-                className="group relative p-6 rounded-2xl bg-card border border-border hover:border-forge-ember/50 transition-all duration-300 hover:shadow-ember cursor-pointer"
+                className="group relative p-6 rounded-2xl bg-card border border-gray-300 hover:border-forge-ember/50 transition-all duration-300 hover:shadow-ember cursor-pointer"
               >
                 <div className="flex flex-col items-center gap-4">
                   <div className="p-4 rounded-xl bg-secondary group-hover:bg-forge-ember/10 transition-colors duration-300">

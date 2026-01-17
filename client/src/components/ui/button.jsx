@@ -14,7 +14,7 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-border bg-transparent hover:bg-secondary hover:border-primary/50 text-foreground",
+          "border border-gray-300 bg-transparent hover:bg-secondary hover:border-gray-400 text-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost:
@@ -24,7 +24,7 @@ const buttonVariants = cva(
         forge:
           "bg-gradient-to-r from-forge-molten via-forge-ember to-forge-flame text-primary-foreground shadow-lg hover:shadow-ember transition-all duration-300 hover:scale-[1.02]",
         forgeOutline:
-          "border border-forge-ember/50 bg-transparent text-forge-ember hover:bg-forge-ember/10 hover:border-forge-ember transition-all duration-300",
+          "border border-gray-400 bg-transparent text-forge-ember hover:bg-forge-ember/10 hover:border-gray-500 transition-all duration-300",
         forgeGhost:
           "text-forge-steel hover:text-forge-ember hover:bg-forge-ember/5 transition-all duration-300",
       },

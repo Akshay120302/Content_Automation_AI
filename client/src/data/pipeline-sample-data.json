@@ -1,0 +1,205 @@
+{
+  "pipelineStatus": {
+    "id": "pipeline-1",
+    "name": "Daily Tech Content",
+    "status": "active",
+    "platform": "YouTube",
+    "contentType": "Video",
+    "agentModel": "GPT-4",
+    "nextScheduled": "2026-01-13T10:00:00Z",
+    "totalPosts": 156,
+    "successRate": 98.5,
+    "configurations": [
+      {
+        "id": "config-1",
+        "label": "Content Generation",
+        "value": "Enabled",
+        "icon": "check"
+      },
+      {
+        "id": "config-2",
+        "label": "Auto Publishing",
+        "value": "Enabled",
+        "icon": "check"
+      },
+      {
+        "id": "config-3",
+        "label": "Quality Check",
+        "value": "Enabled",
+        "icon": "check"
+      },
+      {
+        "id": "config-4",
+        "label": "Analytics Tracking",
+        "value": "Enabled",
+        "icon": "check"
+      }
+    ]
+  },
+  "liveLogs": [
+    {
+      "id": "log-1",
+      "timestamp": "2026-01-12T14:32:15Z",
+      "type": "success",
+      "message": "Content generated successfully for 'AI in 2026'"
+    },
+    {
+      "id": "log-2",
+      "timestamp": "2026-01-12T14:30:42Z",
+      "type": "info",
+      "message": "Starting content generation workflow"
+    },
+    {
+      "id": "log-3",
+      "timestamp": "2026-01-12T14:28:33Z",
+      "type": "success",
+      "message": "Posted 'Machine Learning Basics' to YouTube"
+    },
+    {
+      "id": "log-4",
+      "timestamp": "2026-01-12T14:25:18Z",
+      "type": "warning",
+      "message": "Rate limit approaching for YouTube API"
+    },
+    {
+      "id": "log-5",
+      "timestamp": "2026-01-12T14:20:05Z",
+      "type": "info",
+      "message": "Fetching trending topics from region: North America"
+    },
+    {
+      "id": "log-6",
+      "timestamp": "2026-01-12T14:15:22Z",
+      "type": "success",
+      "message": "Quality check passed for video content"
+    },
+    {
+      "id": "log-7",
+      "timestamp": "2026-01-12T14:10:47Z",
+      "type": "info",
+      "message": "Analyzing engagement metrics for optimization"
+    },
+    {
+      "id": "log-8",
+      "timestamp": "2026-01-12T14:05:31Z",
+      "type": "error",
+      "message": "Thumbnail generation failed - retrying..."
+    },
+    {
+      "id": "log-9",
+      "timestamp": "2026-01-12T14:00:12Z",
+      "type": "success",
+      "message": "Thumbnail regenerated successfully"
+    }
+  ],
+  "queue": [
+    {
+      "id": "queue-1",
+      "title": "The Future of Quantum Computing",
+      "thumbnail": "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=225&fit=crop",
+      "scheduledFor": "2026-01-13T10:00:00Z",
+      "status": "pending",
+      "contentType": "Video",
+      "duration": "8:45"
+    },
+    {
+      "id": "queue-2",
+      "title": "5G Technology Explained Simply",
+      "thumbnail": "https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=400&h=225&fit=crop",
+      "scheduledFor": "2026-01-14T10:00:00Z",
+      "status": "generating",
+      "contentType": "Video",
+      "duration": "6:30"
+    },
+    {
+      "id": "queue-3",
+      "title": "Blockchain Beyond Cryptocurrency",
+      "thumbnail": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&h=225&fit=crop",
+      "scheduledFor": "2026-01-15T10:00:00Z",
+      "status": "pending",
+      "contentType": "Video",
+      "duration": "7:15"
+    }
+  ],
+  "posted": [
+    {
+      "id": "post-1",
+      "title": "Machine Learning Basics for Beginners",
+      "thumbnail": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=225&fit=crop",
+      "postedAt": "2026-01-12T10:00:00Z",
+      "views": 12543,
+      "likes": 892,
+      "comments": 124,
+      "status": "published"
+    },
+    {
+      "id": "post-2",
+      "title": "AI Tools That Will Change Your Workflow",
+      "thumbnail": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=225&fit=crop",
+      "postedAt": "2026-01-11T10:00:00Z",
+      "views": 18234,
+      "likes": 1456,
+      "comments": 203,
+      "status": "published"
+    },
+    {
+      "id": "post-3",
+      "title": "Understanding Neural Networks",
+      "thumbnail": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=400&h=225&fit=crop",
+      "postedAt": "2026-01-10T10:00:00Z",
+      "views": 9876,
+      "likes": 654,
+      "comments": 87,
+      "status": "published"
+    }
+  ],
+  "analytics": {
+    "overview": {
+      "totalViews": 145678,
+      "totalLikes": 12456,
+      "totalComments": 1543,
+      "avgEngagementRate": 8.5,
+      "growthRate": 15.3
+    },
+    "viewsOverTime": [
+      { "date": "2026-01-06", "views": 8500 },
+      { "date": "2026-01-07", "views": 9200 },
+      { "date": "2026-01-08", "views": 11000 },
+      { "date": "2026-01-09", "views": 13400 },
+      { "date": "2026-01-10", "views": 9876 },
+      { "date": "2026-01-11", "views": 18234 },
+      { "date": "2026-01-12", "views": 12543 }
+    ],
+    "topPerformingContent": [
+      {
+        "title": "AI Tools That Will Change Your Workflow",
+        "views": 18234,
+        "engagementRate": 9.1
+      },
+      {
+        "title": "Machine Learning Basics for Beginners",
+        "views": 12543,
+        "engagementRate": 8.2
+      },
+      {
+        "title": "Understanding Neural Networks",
+        "views": 9876,
+        "engagementRate": 7.5
+      }
+    ],
+    "audienceDemographics": {
+      "byAge": [
+        { "range": "18-24", "percentage": 32 },
+        { "range": "25-34", "percentage": 45 },
+        { "range": "35-44", "percentage": 18 },
+        { "range": "45+", "percentage": 5 }
+      ],
+      "byRegion": [
+        { "region": "North America", "percentage": 48 },
+        { "region": "Europe", "percentage": 28 },
+        { "region": "Asia", "percentage": 18 },
+        { "region": "Other", "percentage": 6 }
+      ]
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "avatar": "",
+  "initials": "JD",
+  "subscription": {
+    "plan": "Pro Plan",
+    "status": "active",
+    "startDate": "2025-12-01",
+    "endDate": "2026-12-01",
+    "price": "$49/month",
+    "features": [
+      "Unlimited Pipelines",
+      "All AI Models",
+      "Priority Support",
+      "Advanced Analytics",
+      "Custom Branding"
+    ]
+  },
+  "usage": {
+    "pipelinesCreated": 12,
+    "contentGenerated": 156,
+    "totalViews": "145.6K",
+    "totalEngagement": "12.4K"
+  },
+  "connectedPlatforms": [
+    { "name": "YouTube", "connected": true, "icon": "Youtube", "accounts": 2 },
+    { "name": "Instagram", "connected": true, "icon": "Instagram", "accounts": 3 },
+    { "name": "Medium", "connected": false, "icon": "Globe", "accounts": 0 }
+  ],
+  "joinedDate": "December 2025"
+}

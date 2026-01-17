@@ -46,7 +46,7 @@ export function SignUp() {
             </span>
           </div>
 
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className="text-4xl font-bold mb-4 text-gray-700">
             Start forging your workflows today
           </h2>
           <p className="text-xl text-gray-600 mb-8">
@@ -68,7 +68,7 @@ export function SignUp() {
             <p className="text-sm text-gray-700 italic">
               "FlowForge transformed how I create content. What used to take hours now happens automatically while I sleep!"
             </p>
-            <p className="text-sm font-semibold mt-2">— Sarah Chen, Content Creator</p>
+            <p className="text-sm font-semibold mt-2 text-gray-700">— Sarah Chen, Content Creator</p>
           </div>
         </div>
 
@@ -79,7 +79,7 @@ export function SignUp() {
             className="mb-6 md:hidden"
             onClick={() => navigate('/signup')}
           >
-            <ArrowLeft className="size-4 mr-2" />
+            <ArrowLeft className="size-4 mr-2 text-black" />
             Back to home
           </Button>
 
@@ -95,17 +95,17 @@ export function SignUp() {
             </div>
 
             <div className="text-center mb-6">
-              <h1 className="text-2xl font-bold mb-2">Create your account</h1>
+              <h1 className="text-2xl font-bold mb-2 text-black">Create your account</h1>
               <p className="text-gray-600">Start building AI workflows for free</p>
             </div>
 
             {/* Social signup buttons */}
             <div className="space-y-3 mb-6">
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full text-gray-700">
                 <Chrome className="size-5 mr-2" />
                 Sign up with Google
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full text-gray-700">
                 <Github className="size-5 mr-2" />
                 Sign up with GitHub
               </Button>
@@ -119,7 +119,7 @@ export function SignUp() {
             </div>
 
             {/* Sign up form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 text-gray-700">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <div className="relative">

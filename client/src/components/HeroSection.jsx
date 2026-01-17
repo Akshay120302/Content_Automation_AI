@@ -26,18 +26,18 @@ const HeroSection = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-gray-300 mb-8">
             <Sparkles className="h-4 w-4 text-forge-ember" />
-            <span className="text-sm font-medium text-muted-foreground">
+            <span className="text-sm font-medium text-muted-foreground bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               AI-Powered Content Automation
             </span>
           </div>
 
           {/* Main Heading */}
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
-            <span className="text-foreground">Forge Your</span>
+            <span className="text-foreground font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Forge Your</span>
             <br />
-            <span className="text-gradient-molten">Content Empire</span>
+            <span className="text-foreground font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Content Empire</span>
           </h1>
 
           {/* Subheading */}
@@ -49,7 +49,7 @@ const HeroSection = () => {
           {/* CTA Buttons */}
          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
           <Link to="/signin">
-            <Button variant="forge" size="xl" className="group">
+            <Button variant="forge" size="xl" className="group bg-gradient-molten">
               Start Forging
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
@@ -61,7 +61,7 @@ const HeroSection = () => {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-10 border-t border-border/50">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-10 border-t border-gray-300">
             {[
               { value: "10+", label: "Platforms" },
               { value: "50+", label: "AI Actions" },
@@ -69,7 +69,7 @@ const HeroSection = () => {
               { value: "24/7", label: "Running" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="font-display text-3xl sm:text-4xl font-bold text-gradient-molten mb-1">
+                <div className="font-display text-3xl sm:text-4xl font-bold text-purple-600 mb-1">
                   {stat.value}
                 </div>
                 <div className="text-sm text-muted-foreground">{stat.label}</div>

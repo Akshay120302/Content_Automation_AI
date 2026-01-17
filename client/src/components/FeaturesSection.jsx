@@ -45,10 +45,10 @@ const features = [
 
 const FeaturesSection = () => {
   return (
-    <section id="features" className="py-24 relative">
+    <section id="features" className="py-24 relative bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-black">
             Powerful Features to{" "}
             <span className="text-gradient-molten">Supercharge</span> Your Content
           </h2>
@@ -64,7 +64,7 @@ const FeaturesSection = () => {
             return (
               <div
                 key={feature.title}
-                className="group p-6 rounded-2xl bg-card border border-border hover:border-forge-ember/30 transition-all duration-300 hover:translate-y-[-4px]"
+                className="group p-6 rounded-2xl bg-card border border-gray-300 hover:border-forge-ember/30 transition-all duration-300 hover:translate-y-[-4px]"
               >
                 <div className="mb-4 inline-flex p-3 rounded-xl bg-forge-ember/10 group-hover:bg-forge-ember/20 transition-colors duration-300">
                   <Icon className="h-6 w-6 text-forge-ember" />

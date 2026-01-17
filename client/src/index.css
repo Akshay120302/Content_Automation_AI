@@ -9,13 +9,13 @@
   :root {
     /* Dark forge theme - primary */
     --background: 220 20% 6%;
-    --foreground: 40 10% 95%;
+    --foreground: 0 0% 0%;
 
     --card: 220 18% 10%;
-    --card-foreground: 40 10% 95%;
+    --card-foreground: 0 0% 0%;
 
     --popover: 220 18% 10%;
-    --popover-foreground: 40 10% 95%;
+    --popover-foreground: 0 0% 0%;
 
     /* Molten orange/amber */
     --primary: 25 95% 53%;
@@ -52,14 +52,14 @@
     --forge-ash: 220 10% 40%;
 
     /* Gradients */
-    --gradient-molten: linear-gradient(135deg, hsl(15 90% 45%) 0%, hsl(25 95% 53%) 50%, hsl(35 100% 50%) 100%);
-    --gradient-ember: linear-gradient(180deg, hsl(25 95% 53% / 0.2) 0%, transparent 100%);
+    --gradient-molten: linear-gradient(135deg, hsl(234, 90%, 45%) 0%, hsl(221, 95%, 53%) 50%, hsl(221, 100%, 50%) 100%);
+    --gradient-ember: linear-gradient(180deg, hsla(197, 95%, 53%, 0.2) 0%, transparent 100%);
     --gradient-steel: linear-gradient(135deg, hsl(220 20% 6%) 0%, hsl(220 18% 12%) 100%);
-    --gradient-glow: radial-gradient(ellipse at center, hsl(25 95% 53% / 0.15) 0%, transparent 70%);
+    --gradient-glow: radial-gradient(ellipse at center, hsla(202, 95%, 53%, 0.15) 0%, transparent 70%);
 
     /* Shadows */
-    --shadow-ember: 0 0 40px hsl(25 95% 53% / 0.3);
-    --shadow-glow: 0 0 80px hsl(25 95% 53% / 0.2);
+    --shadow-ember: 0 0 40px hsla(216, 95%, 53%, 0.3);
+    --shadow-glow: 0 0 80px hsla(224, 95%, 53%, 0.2);
     --shadow-card: 0 4px 24px hsl(0 0% 0% / 0.3);
 
     --sidebar-background: 220 20% 8%;
@@ -95,30 +95,30 @@
 
 @layer utilities {
   .text-gradient-molten {
-    background: linear-gradient(135deg, hsl(15 90% 45%) 0%, hsl(25 95% 53%) 40%, hsl(35 100% 50%) 100%);
+    background: linear-gradient(to right, rgb(147, 51, 234), rgb(37, 99, 235));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .bg-gradient-molten {
-    background: linear-gradient(135deg, hsl(15 90% 45%) 0%, hsl(25 95% 53%) 50%, hsl(35 100% 50%) 100%);
+    background: linear-gradient(to right, rgb(147, 51, 234), rgb(99, 102, 241), rgb(37, 99, 235));
   }
 
   .bg-gradient-steel {
-    background: linear-gradient(135deg, hsl(220 20% 6%) 0%, hsl(220 18% 12%) 100%);
+    background: linear-gradient(180deg, hsl(250, 40%, 92%) 0%, hsl(217, 50%, 95%) 40%, hsl(0, 0%, 100%) 100%);
   }
 
   .shadow-ember {
-    box-shadow: 0 0 40px hsl(25 95% 53% / 0.3);
+    box-shadow: 0 0 40px hsla(226, 95%, 53%, 0.3);
   }
 
   .shadow-glow {
-    box-shadow: 0 0 80px hsl(25 95% 53% / 0.2);
+    box-shadow: 0 0 80px hsla(221, 95%, 53%, 0.2);
   }
 
   .border-ember {
-    border-color: hsl(25 95% 53% / 0.3);
+    border-color: hsla(224, 95%, 53%, 0.3);
   }
 
   .glow-pulse {
@@ -127,10 +127,10 @@
 
   @keyframes glow-pulse {
     0%, 100% {
-      filter: drop-shadow(0 0 20px hsl(25 95% 53% / 0.4));
+      filter: drop-shadow(0 0 20px hsla(226, 95%, 53%, 0.4));
     }
     50% {
-      filter: drop-shadow(0 0 40px hsl(25 95% 53% / 0.6));
+      filter: drop-shadow(0 0 40px hsla(214, 86%, 58%, 0.6));
     }
   }
 

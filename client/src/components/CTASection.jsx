@@ -3,7 +3,7 @@ import { ArrowRight, Flame } from "lucide-react";
 
 const CTASection = () => {
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="py-24 relative overflow-hidden bg-white">
       {/* Background effects */}
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-forge-ember/10 rounded-full blur-[120px]" />
@@ -15,7 +15,7 @@ const CTASection = () => {
             <Flame className="h-12 w-12 text-forge-ember glow-pulse" />
           </div>
 
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-black">
             Ready to{" "}
             <span className="text-gradient-molten">Forge</span>{" "}
             Your Content Empire?
@@ -27,7 +27,7 @@ const CTASection = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button variant="forge" size="xl" className="group">
+            <Button variant="forge" size="xl" className="group bg-gradient-molten">
               Start Free Trial
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
