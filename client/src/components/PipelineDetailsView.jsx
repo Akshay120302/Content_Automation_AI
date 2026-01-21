@@ -216,7 +216,11 @@ export function PipelineDetailsView({ pipelineId }) {
                             </div>
                           </div>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => navigate(`/content-editor?id=${item.id}&type=${item.type || 'video'}&platform=${item.platform || 'YouTube'}&status=${item.status}`)}
+                        >
                           Edit
                         </Button>
                       </div>
@@ -256,7 +260,11 @@ export function PipelineDetailsView({ pipelineId }) {
                             Posted {formatDate(item.postedAt)}
                           </p>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => navigate(`/content-editor?id=${item.id}&type=${item.type || 'video'}&platform=${item.platform || 'YouTube'}&status=posted`)}
+                        >
                           Edit
                         </Button>
                       </div>

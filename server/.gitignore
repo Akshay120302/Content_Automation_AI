@@ -24,6 +24,7 @@ MANIFEST
 
 # Virtual Environment
 .venv/
+venv
 env/
 ENV/
 env.bak/
@@ -68,3 +69,9 @@ temp/
 # OS
 Thumbs.db
 .DS_Store
+
+# Documentations
+
+ARCHITECTURE.md
+AUTH_SETUP.md
+IMPLEMENTATION_SUMMARY.md

@@ -5,18 +5,43 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
+import { useAuth } from "../contexts/AuthContext";
+import { useToast } from "../hooks/use-toast";
 
 
 export function SignIn() {
     const navigate = useNavigate();
+    const { login } = useAuth();
+    const { toast } = useToast();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle sign in logic here
-    console.log("Sign in with:", { email, password });
+    
+    setIsLoading(true);
+
+    try {
+      await login({ email, password });
+
+      toast({
+        title: "Success!",
+        description: "Welcome back!",
+      });
+
+      // Redirect to dashboard
+      navigate("/dashboard");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message || "Invalid email or password",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -111,8 +136,9 @@ export function SignIn() {
               type="submit" 
               className="w-full bg-gradient-to-r from-purple-600 to-blue-600" 
               size="lg"
+              disabled={isLoading}
             >
-              Sign in
+              {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
 

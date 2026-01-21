@@ -6,10 +6,14 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
 import { Checkbox } from './ui/checkbox';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../hooks/use-toast';
 
 
 export function SignUp() {
   const navigate = useNavigate();
+  const { signup } = useAuth();
+  const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -19,10 +23,64 @@ export function SignUp() {
     agreeToTerms: false
   });
 
-  const handleSubmit = (e) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle sign up logic here
-    console.log('Sign up with:', formData);
+    
+    // Validation
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: 'Error',
+        description: 'Passwords do not match',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!formData.agreeToTerms) {
+      toast({
+        title: 'Error',
+        description: 'Please agree to the Terms of Service and Privacy Policy',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      toast({
+        title: 'Error',
+        description: 'Password must be at least 8 characters long',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await signup({
+        username: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      toast({
+        title: 'Success!',
+        description: 'Account created successfully',
+      });
+
+      // Redirect to dashboard
+      navigate('/dashboard');
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to create account. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const features = [
@@ -205,8 +263,9 @@ export function SignUp() {
                 type="submit" 
                 className="w-full bg-gradient-to-r from-purple-600 to-blue-600" 
                 size="lg"
+                disabled={isLoading}
               >
-                Create account
+                {isLoading ? 'Creating account...' : 'Create account'}
               </Button>
             </form>
 

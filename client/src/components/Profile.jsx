@@ -41,12 +41,38 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Separator } from "./ui/separator";
 import Navbar from "./Navbar";
-import userData from "../data/userData.json"; //Mock user data
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import mockUserData from "../data/userData.json"; // Mock data for unimplemented features
 
 export function Profile() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
+  // Use real user data for profile, mock data for unimplemented features
+  const userData = mockUserData;
+  
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
   const [weeklyReports, setWeeklyReports] = useState(true);
+
+  // Helper function to get user initials
+  const getInitials = (name, email) => {
+    if (name) {
+      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+    if (email) {
+      return email.substring(0, 2).toUpperCase();
+    }
+    return 'U';
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
 
   const iconMap = {
     Youtube,
@@ -60,7 +86,7 @@ export function Profile() {
       <Navbar
         variant="profile"
         onNavigate={(page) => navigate(`/${page}`)}
-        userData={userData}
+        userData={user}
         backTarget="Dashboard"
       />
 
@@ -92,9 +118,9 @@ export function Profile() {
                 <div className="flex items-center gap-6">
                   <div className="relative">
                     <Avatar className="size-24">
-                      <AvatarImage src={userData.avatar} alt={userData.name} />
+                      <AvatarImage src={user?.avatar} alt={user?.username} />
                       <AvatarFallback className="bg-gradient-to-br from-purple-600 to-blue-600 text-white text-2xl">
-                        {userData.initials}
+                        {getInitials(user?.username, user?.email)}
                       </AvatarFallback>
                     </Avatar>
                     <Button
@@ -119,8 +145,8 @@ export function Profile() {
 
                 {/* Name */}
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" className="border border-gray-300 rounded-md bg-gray-100" defaultValue={userData.name} />
+                  <Label htmlFor="name">Username</Label>
+                  <Input id="name" className="border border-gray-300 rounded-md bg-gray-100" defaultValue={user?.username} />
                 </div>
 
                 {/* Email */}
@@ -130,14 +156,14 @@ export function Profile() {
                     id="email"
                     type="email"
                     className="border border-gray-300 rounded-md bg-gray-100"
-                    defaultValue={userData.email}
+                    defaultValue={user?.email}
                   />
                 </div>
 
                 {/* Member Since */}
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Calendar className="size-4" />
-                  <span>Member since {userData.joinedDate}</span>
+                  <span>Member since {formatDate(user?.created_at)}</span>
                 </div>
 
                 <Button className="bg-gradient-to-r from-purple-600 to-blue-600">

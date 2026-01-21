@@ -12,9 +12,31 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { useAuth } from "../contexts/AuthContext";
 
 const Navbar = ({ variant = "default", onNavigate, userData, backTarget }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, logout, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  // Use authenticated user if available, otherwise fall back to passed userData
+  const displayUser = user || userData;
+
+  // Helper function to get user initials
+  const getInitials = (name, email) => {
+    if (name) {
+      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+    if (email) {
+      return email.substring(0, 2).toUpperCase();
+    }
+    return 'U';
+  };
+
+  const handleSignOut = async () => {
+    await logout();
+    navigate('/');
+  };
 
   // ---------------- PROFILE/Dashboard/pipeline/etc NAVBAR ----------------
   if (variant === "profile") {
@@ -45,12 +67,15 @@ const Navbar = ({ variant = "default", onNavigate, userData, backTarget }) => {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-purple-50 rounded-lg border border-purple-200">
+              <button 
+                onClick={() => navigate('/subscription')}
+                className="hidden md:flex items-center gap-2 px-4 py-2 bg-purple-50 rounded-lg border border-purple-200 hover:bg-purple-100 transition-colors cursor-pointer"
+              >
                 <CreditCard className="size-4 text-purple-600" />
                 <span className="text-sm font-medium text-purple-700">
-                  {userData?.subscription?.plan}
+                  {displayUser?.subscription?.plan || 'Free Plan'}
                 </span>
-              </div>
+              </button>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -60,11 +85,11 @@ const Navbar = ({ variant = "default", onNavigate, userData, backTarget }) => {
                   >
                     <Avatar>
                       <AvatarImage
-                        src={userData?.avatar}
-                        alt={userData?.name}
+                        src={displayUser?.avatar}
+                        alt={displayUser?.username || displayUser?.name}
                       />
                       <AvatarFallback className="bg-gradient-to-br from-purple-600 to-blue-600 text-white">
-                        {userData?.initials}
+                        {displayUser?.initials || getInitials(displayUser?.username || displayUser?.name, displayUser?.email)}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -72,9 +97,9 @@ const Navbar = ({ variant = "default", onNavigate, userData, backTarget }) => {
                 <DropdownMenuContent align="end" className="w-56 bg-white">
                   <DropdownMenuLabel>
                     <div className="flex flex-col">
-                      <span className="font-semibold">{userData?.name}</span>
+                      <span className="font-semibold">{displayUser?.username || displayUser?.name}</span>
                       <span className="text-xs text-gray-500">
-                        {userData?.email}
+                        {displayUser?.email}
                       </span>
                     </div>
                   </DropdownMenuLabel>
@@ -83,7 +108,7 @@ const Navbar = ({ variant = "default", onNavigate, userData, backTarget }) => {
                     <User className="size-4 mr-2" />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onNavigate?.("home")}>
+                  <DropdownMenuItem onClick={handleSignOut}>
                     Sign out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -123,16 +148,61 @@ const Navbar = ({ variant = "default", onNavigate, userData, backTarget }) => {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <Link to="/signin">
-              <Button variant="forge" size="sm">
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button variant="forge" size="sm">
-                Get Started
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="relative h-10 w-10 rounded-full"
+                  >
+                    <Avatar>
+                      <AvatarImage
+                        src={displayUser?.avatar}
+                        alt={displayUser?.username || displayUser?.name}
+                      />
+                      <AvatarFallback className="bg-gradient-to-br from-purple-600 to-blue-600 text-white">
+                        {displayUser?.initials || getInitials(displayUser?.username || displayUser?.name, displayUser?.email)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-white">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col">
+                      <span className="font-semibold">{displayUser?.username || displayUser?.name}</span>
+                      <span className="text-xs text-gray-500">
+                        {displayUser?.email}
+                      </span>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                    <Zap className="size-4 mr-2" />
+                    Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    <User className="size-4 mr-2" />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Link to="/signin">
+                  <Button variant="forge" size="sm">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button variant="forge" size="sm">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -156,6 +226,62 @@ const Navbar = ({ variant = "default", onNavigate, userData, backTarget }) => {
                   {link.label}
                 </a>
               ))}
+              
+              {/* Mobile auth section */}
+              <div className="mt-4 flex flex-col gap-2 px-2">
+                {isAuthenticated ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigate("/dashboard");
+                        setIsOpen(false);
+                      }}
+                      className="w-full justify-start"
+                    >
+                      <Zap className="size-4 mr-2" />
+                      Dashboard
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigate("/profile");
+                        setIsOpen(false);
+                      }}
+                      className="w-full justify-start"
+                    >
+                      <User className="size-4 mr-2" />
+                      Profile
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        handleSignOut();
+                        setIsOpen(false);
+                      }}
+                      className="w-full justify-start"
+                    >
+                      Sign out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/signin" onClick={() => setIsOpen(false)}>
+                      <Button variant="forge" size="sm" className="w-full">
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link to="/signup" onClick={() => setIsOpen(false)}>
+                      <Button variant="forge" size="sm" className="w-full">
+                        Get Started
+                      </Button>
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         )}
