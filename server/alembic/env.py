@@ -33,6 +33,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 from app.database.database import Base
 from app.models.user import *
+from app.models.pipeline import Pipeline
 
 target_metadata = Base.metadata
 

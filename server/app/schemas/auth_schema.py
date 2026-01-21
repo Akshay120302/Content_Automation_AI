@@ -15,9 +15,9 @@ class UserLoginRequest(BaseModel):
     email: EmailStr
     password: str
 
-
-class RefreshTokenRequest(BaseModel):
-    refresh_token: str
+# Don't need this anymore since refresh token is read from HttpOnly cookie
+# class RefreshTokenRequest(BaseModel):
+#     refresh_token: str
 
 
 # Response Schemas

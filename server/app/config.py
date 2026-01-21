@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     # File upload settings
     UPLOAD_DIR: str = "uploads"
     MAX_UPLOAD_SIZE: int = 10 * 1024 * 1024  # 10MB
+
+    # Redis URL
+    REDIS_URL: str ="reddis_url_here"
     
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
     

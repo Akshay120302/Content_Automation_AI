@@ -5,6 +5,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
+from fastapi import Response
 import secrets
 
 from app.models.user import EmailVerificationToken, User, RefreshToken
@@ -66,9 +67,21 @@ def create_refresh_token(user_id: UUID, db: Session) -> str:
     
     return token
 
+# Set refresh token in HttpOnly cookie
+def set_refresh_cookie(response: Response, refresh_token: str):
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=False,          # True in prod, False for local dev if needed
+        samesite="lax",        # strict in prod, lax for local dev if needed
+        path="/auth/refresh",
+        max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRE_DAYS
+    )
+
 
 # Signup Controller
-def signup_user(user_data: UserSignupRequest, db: Session) -> TokenResponse:
+def signup_user(user_data: UserSignupRequest, db: Session, response: Response) -> TokenResponse:
     """
     Register a new user
     """
@@ -102,17 +115,19 @@ def signup_user(user_data: UserSignupRequest, db: Session) -> TokenResponse:
     # Create access token and refresh token
     access_token = create_access_token(data={"sub": str(new_user.id)})
     refresh_token = create_refresh_token(new_user.id, db)
+
+    set_refresh_cookie(response, refresh_token)
     
     return TokenResponse(
         access_token=access_token,
-        refresh_token=refresh_token,
+        refresh_token="",  # refresh token is set in HttpOnly cookie and frontend does not need it directly
         token_type="bearer",
         user=UserResponse.model_validate(new_user)
     )
 
 
 # Login Controller
-def login_user(login_data: UserLoginRequest, db: Session) -> TokenResponse:
+def login_user(login_data: UserLoginRequest, db: Session, response: Response) -> TokenResponse:
     """
     Authenticate and login a user
     """
@@ -152,10 +167,12 @@ def login_user(login_data: UserLoginRequest, db: Session) -> TokenResponse:
     # Create access token and refresh token
     access_token = create_access_token(data={"sub": str(user.id)})
     refresh_token = create_refresh_token(user.id, db)
+
+    set_refresh_cookie(response, refresh_token)
     
     return TokenResponse(
         access_token=access_token,
-        refresh_token=refresh_token,
+        refresh_token="",  # refresh token is set in HttpOnly cookie and frontend does not need it directly
         token_type="bearer",
         user=UserResponse.model_validate(user)
     )
@@ -189,7 +206,7 @@ def get_current_user(token: str, db: Session) -> User:
 
 
 # Refresh the Access Token
-def refresh_access_token(refresh_token: str, db: Session) -> TokenResponse:
+def refresh_access_token(refresh_token: str, db: Session, response: Response) -> TokenResponse:
     """
     Generate a new access token using a refresh token
     """
@@ -230,10 +247,21 @@ def refresh_access_token(refresh_token: str, db: Session) -> TokenResponse:
     
     # Create new refresh token
     new_refresh_token = create_refresh_token(user.id, db)
+
+    # Set refresh token in HttpOnly cookie
+    response.set_cookie(
+        key="refresh_token",
+        value = new_refresh_token,
+        httponly=True,
+        secure=False,         # True in prod, False for local dev if needed
+        samesite="lax",   # strict in prod, lax for local dev if needed
+        path="/auth/refresh",
+        max_age=60*60*24*settings.REFRESH_TOKEN_EXPIRE_DAYS
+    )
     
     return TokenResponse(
         access_token=access_token,
-        refresh_token=new_refresh_token,
+        refresh_token="", # frontend does not need it directly
         token_type="bearer",
         user=UserResponse.model_validate(user)
     )
