@@ -32,7 +32,6 @@ export const AuthProvider = ({ children }) => {
         // Clear invalid data
         localStorage.removeItem('user');
         localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
       } finally {
         setLoading(false);
       }
@@ -40,6 +39,34 @@ export const AuthProvider = ({ children }) => {
 
     initAuth();
   }, []);
+
+  // ✅ AUTO-REFRESH TIMER: Refresh access token every 20 minutes
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('🔄 Starting auto-refresh timer (every 20 minutes)');
+      
+      const refreshInterval = setInterval(async () => {
+        try {
+          console.log('⏰ Auto-refreshing access token...');
+          const response = await authAPI.refreshToken();
+          
+          if (response && response.access_token) {
+            console.log('✅ Access token refreshed successfully');
+            setUser(response.user);
+          }
+        } catch (error) {
+          console.error('❌ Auto-refresh failed:', error);
+          // Don't logout immediately - 401 interceptor will handle it on next request
+        }
+      }, 20 * 60 * 1000); // 20 minutes in milliseconds
+
+      // Cleanup interval on unmount or when auth changes
+      return () => {
+        console.log('🛑 Stopping auto-refresh timer');
+        clearInterval(refreshInterval);
+      };
+    }
+  }, [isAuthenticated]);
 
   const signup = async (userData) => {
     try {

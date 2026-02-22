@@ -21,7 +21,7 @@ export const GuestRoute = ({ children }) => {
 
   // If user is authenticated, redirect to profile
   if (isAuthenticated) {
-    return <Navigate to="/profile" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // If not authenticated, show the signin/signup page

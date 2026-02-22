@@ -36,10 +36,15 @@ from app.routes import health_router
 from app.routes.auth_routes import router as auth_router
 from app.routes.dashboard_routes import router as dashboard_router
 from app.routes.pipeline_routes import router as pipeline_router
+from app.routes.asset_routes import router as asset_router
+from app.routes.pipeline_execution_routes import router as pipeline_execution_router
 # Import models to ensure they are registered with Base
 from app.models import User, Plan, Subscription, RefreshToken, OAuthAccount
+from app.models.pipeline import Pipeline, PipelineAsset
 
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(dashboard_router)
 app.include_router(pipeline_router)
+app.include_router(asset_router)
+app.include_router(pipeline_execution_router)

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Zap,
   User,
@@ -35,17 +35,53 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { ScrollArea } from "./ui/scroll-area";
 import sampleData from "../data/pipeline-sample-data.json";
 import Navbar from "./Navbar";
 import userData from "../data/userData.json";
+import { pipelineAPI, pipelineExecutionAPI } from "../services/api";
 
 export function PipelineDetailsView({ pipelineId }) {
-      const navigate = useNavigate();
+  const navigate = useNavigate();
+  const params = useParams();
+  const effectivePipelineId = pipelineId || params.pipelineId;
   const [pipelineStatus, setPipelineStatus] = useState("active");
-  const [data] = useState(sampleData);
+  const [data, setData] = useState(sampleData);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const formatPipelineConfig = (pipeline) => {
+    if (!pipeline) return [];
+    return [
+      { id: "platform", label: "Platform", value: pipeline.platform },
+      { id: "content_type", label: "Content Type", value: pipeline.content_type },
+      { id: "agent_model", label: "Model", value: pipeline.agent_model },
+      { id: "frequency", label: "Frequency", value: pipeline.frequency },
+      { id: "posting_time", label: "Posting Time", value: pipeline.posting_time },
+      { id: "timezone", label: "Timezone", value: pipeline.timezone },
+    ];
+  };
+
+  const mapRunToQueueItem = (run, pipeline) => {
+    const outputs = run?.outputs || {};
+    const scriptTitle = outputs?.composer?.metadata?.title || pipeline?.topic_value || "Untitled";
+    const image = outputs?.image?.images?.[0] || outputs?.composer?.final_images?.[0];
+    const thumbnail = image?.s3_url || image?.url || data.queue?.[0]?.thumbnail;
+    const duration = outputs?.video?.duration_seconds || outputs?.script?.estimated_duration || "-";
+
+    return {
+      id: run.run_id,
+      title: scriptTitle,
+      thumbnail,
+      scheduledFor: run.created_at || new Date().toISOString(),
+      duration: duration ? `${duration}s` : "-",
+      status: run.state?.toLowerCase() || "queued",
+      platform: pipeline?.platform || "",
+      type: pipeline?.content_type || "",
+    };
+  };
 
   const toggleStatus = () => {
     setPipelineStatus((prev) => (prev === "active" ? "paused" : "active"));
@@ -76,6 +112,9 @@ export function PipelineDetailsView({ pipelineId }) {
   };
 
   const formatNumber = (num) => {
+    if (num === undefined || num === null) {
+      return "0";
+    }
     if (num >= 1000000) {
       return (num / 1000000).toFixed(1) + "M";
     }
@@ -84,6 +123,98 @@ export function PipelineDetailsView({ pipelineId }) {
     }
     return num.toString();
   };
+
+  useEffect(() => {
+    const loadDetails = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const pipeline = await pipelineAPI.getById(effectivePipelineId);
+        const [runsResponse, statsResponse] = await Promise.all([
+          pipelineExecutionAPI.listRuns({
+            pipeline_id: effectivePipelineId,
+            limit: 50,
+            offset: 0,
+          }),
+          pipelineExecutionAPI.getStats({
+            pipeline_id: effectivePipelineId,
+            days: 30,
+          })
+        ]);
+
+        const runs = (runsResponse?.runs || []).slice().sort((a, b) => {
+          const aTime = new Date(a.created_at || 0).getTime();
+          const bTime = new Date(b.created_at || 0).getTime();
+          return bTime - aTime;
+        });
+        const completedRuns = runs.filter((r) => r.state === "COMPLETED");
+        const queuedRuns = runs.filter((r) => ["QUEUED", "RUNNING", "RETRY", "PARTIAL_FAIL"].includes(r.state));
+
+        const queueItems = queuedRuns.map((run) => mapRunToQueueItem(run, pipeline));
+        const postedItems = completedRuns.map((run) => mapRunToQueueItem(run, pipeline));
+
+        const totalPosts = runs.length;
+        const successRate = totalPosts > 0 ? Math.round((completedRuns.length / totalPosts) * 100) : 0;
+
+        // Load logs from latest run if available
+        let liveLogs = [];
+        if (runs.length > 0) {
+          const latestRun = runs[0];
+          try {
+            const logs = await pipelineExecutionAPI.getRunLogs(latestRun.run_id, { limit: 50 });
+            liveLogs = (logs?.events || []).map((event, idx) => ({
+              id: `${event.event_id || idx}`,
+              type: (event.level || "INFO").toLowerCase(),
+              message: event.message || event.error || "Event",
+              timestamp: event.timestamp || new Date().toISOString(),
+            }));
+          } catch {
+            liveLogs = [];
+          }
+        }
+
+        setData((prev) => ({
+          ...prev,
+          pipelineStatus: {
+            configurations: formatPipelineConfig(pipeline),
+            totalPosts,
+            successRate,
+          },
+          queue: queueItems,
+          posted: postedItems,
+          liveLogs,
+          analytics: {
+            ...prev.analytics,
+            overview: {
+              totalViews: statsResponse?.total_executions || 0,
+              totalLikes: statsResponse?.completed || 0,
+              avgEngagementRate: statsResponse?.success_rate || 0,
+              growthRate: 0,
+            },
+            topPerformingContent: postedItems.slice(0, 5).map((item) => ({
+              title: item.title,
+              views: 0,
+              engagementRate: 0,
+            })),
+            viewsOverTime: [],
+            audienceDemographics: {
+              byAge: [],
+              byRegion: [],
+            },
+          },
+        }));
+      } catch (loadError) {
+        setError(loadError.message || "Failed to load pipeline details");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (effectivePipelineId) {
+      loadDetails();
+    }
+  }, [effectivePipelineId]);
 
   return (
     <div className="min-h-screen bg-gray-50">

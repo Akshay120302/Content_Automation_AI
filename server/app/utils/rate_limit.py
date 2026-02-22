@@ -9,7 +9,7 @@ signup_rate_limit = RateLimiter(
 # Login: 5 attempts per 15 minutes per IP
 login_rate_limit = RateLimiter(
     times=5,
-    seconds=15 * 60
+    seconds=1 * 60
 )
 
 # Refresh token: optional, defensive

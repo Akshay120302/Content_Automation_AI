@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from uuid import UUID
+from typing import List
 
 from app.models.pipeline import Pipeline
 from app.schemas.pipeline_schema import PipelineCreate, PipelineResponse
@@ -37,7 +38,12 @@ def create_pipeline(pipeline_data: PipelineCreate, user_id: UUID, db: Session) -
             genre=pipeline_data.genre,
             topic_type=pipeline_data.topic_type,
             topic_value=pipeline_data.topic_value,
-            target_regions=pipeline_data.target_regions
+            target_regions=pipeline_data.target_regions,
+            video_provider=pipeline_data.video_provider,
+            video_model=pipeline_data.video_model,
+            video_duration_seconds=pipeline_data.video_duration_seconds,
+            video_aspect_ratio=pipeline_data.video_aspect_ratio,
+            video_fps=pipeline_data.video_fps
         )
         
         # Add to database
@@ -98,6 +104,11 @@ def update_pipeline(pipeline_id: int, pipeline_data: PipelineCreate, user_id: UU
         pipeline.topic_type = pipeline_data.topic_type
         pipeline.topic_value = pipeline_data.topic_value
         pipeline.target_regions = pipeline_data.target_regions
+        pipeline.video_provider = pipeline_data.video_provider
+        pipeline.video_model = pipeline_data.video_model
+        pipeline.video_duration_seconds = pipeline_data.video_duration_seconds
+        pipeline.video_aspect_ratio = pipeline_data.video_aspect_ratio
+        pipeline.video_fps = pipeline_data.video_fps
         
         db.commit()
         db.refresh(pipeline)
@@ -149,3 +160,53 @@ def delete_pipeline(pipeline_id: int, user_id: UUID, db: Session) -> dict:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to delete pipeline: {str(e)}"
         )
+
+
+# Get all pipelines for a user
+def get_user_pipelines(user_id: UUID, db: Session) -> List[PipelineResponse]:
+    """
+    Get all pipelines for a specific user
+    
+    Args:
+        user_id: The UUID of the authenticated user
+        db: Database session
+        
+    Returns:
+        List of user's pipelines
+    """
+    try:
+        pipelines = db.query(Pipeline).filter(Pipeline.user_id == user_id).all()
+        return [PipelineResponse.model_validate(pipeline) for pipeline in pipelines]
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve pipelines: {str(e)}"
+        )
+
+
+# Get a specific pipeline by ID
+def get_pipeline_by_id(pipeline_id: int, user_id: UUID, db: Session) -> PipelineResponse:
+    """
+    Get a specific pipeline by its ID
+    
+    Args:
+        pipeline_id: The ID of the pipeline to retrieve
+        user_id: The UUID of the authenticated user
+        db: Database session
+        
+    Returns:
+        Pipeline details
+    """
+    pipeline = db.query(Pipeline).filter(
+        Pipeline.id == pipeline_id,
+        Pipeline.user_id == user_id
+    ).first()
+    
+    if not pipeline:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Pipeline not found or you don't have permission to access it"
+        )
+    
+    return PipelineResponse.model_validate(pipeline)

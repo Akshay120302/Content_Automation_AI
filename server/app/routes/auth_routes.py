@@ -1,13 +1,15 @@
-from fastapi import APIRouter, Depends, status, Request, Response, HTTPException
+from fastapi import APIRouter, Depends, status, Request, Response, HTTPException, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
+from typing import Optional
 
 from app.database.database import get_db
 from app.models.user import User
 from app.schemas.auth_schema import (UserSignupRequest, UserLoginRequest, TokenResponse, MessageResponse)
-from app.controllers.auth_controller import delete_user_account, resend_verification_email, signup_user, login_user, refresh_access_token, logout_all_devices, get_current_user
+from app.controllers.auth_controller import delete_user_account, resend_verification_email, signup_user, login_user, refresh_access_token, logout_all_devices, logout_current_device, get_current_user
 from app.controllers.auth_controller import verify_email_token
 from app.utils.rate_limit import signup_rate_limit, login_rate_limit, refresh_rate_limit
+from app.config import settings
 
 
 security = HTTPBearer()
@@ -66,12 +68,38 @@ def refresh_token(
     return refresh_access_token(refresh_token, db, response)
 
 
-# Logout route
+# Logout route (all devices)
 @router.post("/logout", response_model=MessageResponse)
 def logout(current_user: User = Depends(get_authenticated_user), db: Session = Depends(get_db)):
     """Logout user from all devices by revoking all refresh tokens"""
     logout_all_devices(current_user.id, db)
     return MessageResponse(message="Successfully logged out from all devices")
+
+
+# Logout from current device only
+@router.post("/logout-current", response_model=MessageResponse)
+def logout_current(
+    request: Request,
+    response: Response,
+    db: Session = Depends(get_db)
+):
+    """Logout from current device only"""
+    refresh_token = request.cookies.get("refresh_token")
+    if not refresh_token:
+        raise HTTPException(status_code=401, detail="No active session")
+    
+    try:
+        token_id, _ = refresh_token.split(":", 1)
+        logout_current_device(token_id, db)
+        
+        # Clear cookies
+        response.delete_cookie(key="refresh_token", path="/auth/refresh")
+        if settings.ENABLE_CSRF_PROTECTION:
+            response.delete_cookie(key="csrf_token", path="/")
+        
+        return MessageResponse(message="Successfully logged out from this device")
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid session")
 
 
 # Delete account route

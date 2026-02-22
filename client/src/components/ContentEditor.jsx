@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   ArrowLeft,
   Play,
@@ -33,13 +33,15 @@ import { Textarea } from './ui/textarea';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Progress } from './ui/progress';
+import { pipelineAPI, pipelineExecutionAPI } from '../services/api';
 
 export function ContentEditor({ onNavigate, queueItem }) {
   const [status, setStatus] = useState(queueItem?.status || 'generating');
   const [isEditing, setIsEditing] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Mock data - in real app, this would come from backend
+  // Fallback mock data (used when no run ID is provided)
   const [contentData, setContentData] = useState({
     title: 'The Future of AI in Content Creation',
     script: `Introduction (0:00-0:15):
@@ -116,6 +118,110 @@ The future is here, and it's automated. Thanks for watching!`,
   // Check if video is ready based on generation progress
   const isVideoReady = status === 'requires_review' || status === 'pending' || (status === 'generating' && contentData?.generation?.progress >= 80);
 
+  const mapRunStateToStatus = (runState) => {
+    if (!runState) return 'generating';
+    const normalized = runState.toLowerCase();
+    if (['queued', 'running'].includes(normalized)) return 'generating';
+    if (normalized === 'completed') return 'completed';
+    if (['hard_fail', 'halted', 'cancelled'].includes(normalized)) return 'error';
+    return 'generating';
+  };
+
+  const buildContentData = (run, outputs, logs, pipeline) => {
+    const scriptText = outputs?.script?.script || outputs?.composer?.caption || '';
+    const firstImage = outputs?.image?.images?.[0] || outputs?.composer?.final_images?.[0];
+    const thumbnail = firstImage?.s3_url || firstImage?.url || contentData.thumbnail;
+    const videoUrl = outputs?.video?.video_url || outputs?.composer?.final_video_url || contentData.videoUrl;
+
+    const steps = run?.steps || [];
+    const stepItems = steps.map((step) => ({
+      name: step.step_name,
+      status: step.state?.toLowerCase(),
+      time: step.completed_at || step.started_at || '-'
+    }));
+
+    const keywords = outputs?.composer?.metadata?.tags || outputs?.script?.metadata?.tags || [];
+    const tone = outputs?.script?.metadata?.tone || pipeline?.genre || contentData.metadata.tone;
+    const duration = outputs?.video?.duration_seconds || outputs?.script?.estimated_duration || contentData.metadata.duration;
+
+    return {
+      title: outputs?.composer?.metadata?.title || pipeline?.topic_value || contentData.title,
+      script: scriptText || contentData.script,
+      thumbnail,
+      videoUrl,
+      metadata: {
+        ...contentData.metadata,
+        tone,
+        keywords,
+        duration: duration ? String(duration) : contentData.metadata.duration,
+      },
+      generation: {
+        startTime: run?.created_at || contentData.generation.startTime,
+        currentStep: run?.current_step || contentData.generation.currentStep,
+        progress: run?.progress_percent ?? contentData.generation.progress,
+        steps: stepItems.length ? stepItems : contentData.generation.steps,
+      },
+      scheduling: {
+        postTime: pipeline?.posting_time || contentData.scheduling.postTime,
+        timezone: pipeline?.timezone || contentData.scheduling.timezone,
+        delay: contentData.scheduling.delay,
+      },
+      errors: logs?.events?.filter((e) => e.level === 'ERROR')?.map((e) => ({
+        type: 'error',
+        message: e.message || e.error || 'Error',
+        suggestion: '',
+        requiresIntervention: false,
+      })) || contentData.errors,
+      interventions: contentData.interventions,
+    };
+  };
+
+  useEffect(() => {
+    const runId = queueItem?.id;
+    if (!runId) {
+      setIsLoading(false);
+      return;
+    }
+
+    let intervalId;
+
+    const loadRunData = async () => {
+      try {
+        setIsLoading(true);
+        const run = await pipelineExecutionAPI.getRun(runId);
+        let outputs = {};
+        try {
+          const outputsResponse = await pipelineExecutionAPI.getRunOutputs(runId);
+          outputs = outputsResponse.outputs || {};
+        } catch {
+          outputs = run?.outputs || {};
+        }
+
+        const logs = await pipelineExecutionAPI.getRunLogs(runId, { limit: 100 });
+        const pipeline = run?.pipeline_id ? await pipelineAPI.getById(run.pipeline_id) : null;
+
+        const nextStatus = mapRunStateToStatus(run?.state);
+        setStatus(nextStatus);
+        setContentData(buildContentData(run, outputs, logs, pipeline));
+
+        if (['completed', 'error'].includes(nextStatus) && intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+      } catch (error) {
+        console.error('Failed to load run data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadRunData();
+    intervalId = setInterval(loadRunData, 10000);
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [queueItem?.id]);
   const handlePause = () => {
     setStatus('paused');
   };

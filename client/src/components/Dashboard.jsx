@@ -32,32 +32,49 @@ import { Card } from "./ui/card";
 import { CreatePipelineModal } from "./CreatePipelineModal";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
+import { pipelineAPI } from "../services/api";
+import { useToast } from "../hooks/use-toast";
 
 import userData from "../data/userData.json";
 
 export function Dashboard() {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const [pipelines, setPipelines] = useState([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load pipelines from localStorage
+  // Load pipelines from backend API
   useEffect(() => {
     loadPipelines();
   }, []);
 
-  const loadPipelines = () => {
-    const stored = localStorage.getItem("flowforge-pipelines");
-    if (stored) {
-      setPipelines(JSON.parse(stored));
+  const loadPipelines = async () => {
+    try {
+      setIsLoading(true);
+      const data = await pipelineAPI.getAll();
+      setPipelines(data);
+    } catch (error) {
+      console.error('Error loading pipelines:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load pipelines. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handlePipelineCreated = () => {
+  const handlePipelineCreated = (newPipeline) => {
+    // Refresh the pipeline list
     loadPipelines();
   };
 
-  const togglePause = (id) => {
+  const togglePause = async (id) => {
+    // Note: Status field not yet in backend model
+    // For now, update locally only
     const updatedPipelines = pipelines.map((p) =>
       p.id === id
         ? {
@@ -68,10 +85,7 @@ export function Dashboard() {
     );
 
     setPipelines(updatedPipelines);
-    localStorage.setItem(
-      "flowforge-pipelines",
-      JSON.stringify(updatedPipelines),
-    );
+    // TODO: Call backend API when status field is added to pipeline model
   };
 
   const getStatusColor = (status) => {
@@ -88,18 +102,34 @@ export function Dashboard() {
   };
 
   const getDescription = (pipeline) => {
-    if (pipeline.topicType === "Specific Topic" && pipeline.specificTopic) {
-      return pipeline.specificTopic;
+    // Handle both frontend and backend data structures
+    const topicType = pipeline.topic_type || pipeline.topicType;
+    const topicValue = pipeline.topic_value || pipeline.specificTopic;
+    
+    if ((topicType === 'specific' || topicType === 'Specific Topic') && topicValue) {
+      return topicValue;
     }
-    return pipeline.topicType || "No topic specified";
+    
+    // Convert backend enum to display format
+    if (topicType === 'topic_of_the_day') return 'Topic of the Day';
+    if (topicType === 'topic_of_the_region') return 'Topic of the Region';
+    if (topicType === 'trending') return 'Trending';
+    
+    return topicType || "No topic specified";
   };
 
   const formatPostingTime = (pipeline) => {
-    if (!pipeline.time || !pipeline.timezone) {
+    // Handle both frontend and backend data structures
+    const time = pipeline.posting_time || pipeline.time;
+    const timezone = pipeline.timezone;
+    
+    if (!time || !timezone) {
       return "Not set";
     }
-    const timezoneName = pipeline.timezone.split("(")[0].trim();
-    return `${pipeline.time} ${timezoneName}`;
+    
+    // Handle timezone format - if it includes description, extract code
+    const timezoneName = timezone.includes("(") ? timezone.split("(")[0].trim() : timezone;
+    return `${time} ${timezoneName}`;
   };
 
   return (
@@ -133,7 +163,14 @@ export function Dashboard() {
           </Button>
         </div>
 
-        {pipelines.length === 0 ? (
+        {isLoading ? (
+          <Card className="p-12 text-center">
+            <div className="max-w-md mx-auto">
+              <Sparkles className="size-12 mx-auto mb-4 text-purple-600 animate-pulse" />
+              <p className="text-gray-600">Loading your pipelines...</p>
+            </div>
+          </Card>
+        ) : pipelines.length === 0 ? (
           <Card className="p-12 text-center bg-gray-900 border-2">
             <div className="max-w-md mx-auto">
               <div className="mb-6 flex justify-end">
@@ -189,7 +226,14 @@ export function Dashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {pipelines.map((pipeline) => (
+                {pipelines.map((pipeline) => {
+                  // Handle both frontend and backend data structures
+                  const agentModel = pipeline.agent_model || pipeline.agentModel;
+                  const contentType = pipeline.content_type || pipeline.contentType;
+                  const regions = pipeline.target_regions || pipeline.regions || [];
+                  const status = pipeline.status || "active"; // Default to active
+                  
+                  return (
                   <TableRow key={pipeline.id}>
                     <TableCell className="font-medium">
                       {pipeline.platform}
@@ -197,11 +241,11 @@ export function Dashboard() {
                     <TableCell className="max-w-xs truncate">
                       {getDescription(pipeline)}
                     </TableCell>
-                    <TableCell>{pipeline.agentModel}</TableCell>
-                    <TableCell>{pipeline.contentType}</TableCell>
+                    <TableCell>{agentModel}</TableCell>
+                    <TableCell>{contentType}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {pipeline.regions.slice(0, 2).map((region, idx) => (
+                        {regions.slice(0, 2).map((region, idx) => (
                           <Badge
                             key={idx}
                             variant="outline"
@@ -210,9 +254,9 @@ export function Dashboard() {
                             {region}
                           </Badge>
                         ))}
-                        {pipeline.regions.length > 2 && (
+                        {regions.length > 2 && (
                           <Badge variant="outline" className="text-xs">
-                            +{pipeline.regions.length - 2}
+                            +{regions.length - 2}
                           </Badge>
                         )}
                       </div>
@@ -220,17 +264,17 @@ export function Dashboard() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Badge
-                          className={getStatusColor(pipeline.status)}
+                          className={getStatusColor(status)}
                           variant="outline"
                         >
-                          {pipeline.status}
+                          {status}
                         </Badge>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => togglePause(pipeline.id)}
                         >
-                          {pipeline.status === "active" ? (
+                          {status === "active" ? (
                             <Pause className="size-4" />
                           ) : (
                             <Play className="size-4" />
@@ -249,7 +293,8 @@ export function Dashboard() {
                       </Button>
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           </Card>

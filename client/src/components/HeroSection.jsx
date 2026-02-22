@@ -48,7 +48,7 @@ const HeroSection = () => {
 
           {/* CTA Buttons */}
          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <Link to="/signin">
+          <Link to="/dashboard">
             <Button variant="forge" size="xl" className="group bg-gradient-molten">
               Start Forging
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
