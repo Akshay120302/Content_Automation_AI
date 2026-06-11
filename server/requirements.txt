@@ -48,3 +48,4 @@ aiohttp==3.11.11
 
 # Additional utilities
 tenacity==9.0.0  # Retry logic
+cryptography==41.0.4
