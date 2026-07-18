@@ -40,7 +40,7 @@ langsmith>=0.1.17,<0.2.0
 openai==1.59.7
 anthropic==0.40.0
 gTTS==2.5.3
-httpx==0.27.2
+# httpx==0.27.2
 
 # Async support
 httpx==0.28.1
