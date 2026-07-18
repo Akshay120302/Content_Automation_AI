@@ -86,7 +86,8 @@ uvicorn server.main:app --reload --port 8000
 
 ```bash
 cd server
-celery -A app.celery_config.celery_app.app worker --loglevel=info
+celery -A app.celery_config.celery_app:celery_app worker --loglevel=info
+# celery -A app.celery_config.celery_app.app worker --loglevel=info
 ```
 
 6. Start frontend
